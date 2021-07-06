@@ -1,5 +1,5 @@
 {
-  "name": "on-exit-or-gc",
+  "name": "on-exit-leak-free",
   "version": "0.0.1",
   "description": "Execute a function on exit without leaking memory, allowing all objects to be garbage collected",
   "main": "index.js",
