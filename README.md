@@ -2,6 +2,8 @@
 
 Execute a function on exit without leaking memory, allowing all objects to be garbage collected
 
+Requires `WeakRef`, `WeakMap` and `FinalizationRegistry`, i.e. use Node v14+.
+
 ## Install
 
 ```bash
@@ -17,12 +19,18 @@ const { register, unregister } = require('on-exit-leak-free')
 const assert = require('assert')
 
 function setup () {
+  // This object can be safely garbage collected,
+  // and the resulting shutdown function will not be called.
+  // There are no leaks.
   const obj = { foo: 'bar' }
   register(obj, shutdown)
   // call unregister(obj) to remove
 }
 
 let shutdownCalled = false
+
+// Please make sure that the function passed to register()
+// does not create a closure around unnecessary objects.
 function shutdown (obj) {
   shutdownCalled = true
   assert.strictEqual(obj.foo, 'bar')
