@@ -1,6 +1,8 @@
 # on-exit-leak-free
 
-Execute a function on exit without leaking memory, allowing all objects to be garbage collected
+Execute a function on exit without leaking memory, allowing all objects to be garbage collected.
+Listen to both `'beforeExit'` and `'exit`, executing the given function only once.
+
 
 Requires `WeakRef`, `WeakMap` and `FinalizationRegistry`, i.e. use Node v14+.
 
@@ -31,7 +33,8 @@ let shutdownCalled = false
 
 // Please make sure that the function passed to register()
 // does not create a closure around unnecessary objects.
-function shutdown (obj) {
+function shutdown (obj, eventName) {
+  console.log(eventName) // beforeExit
   shutdownCalled = true
   assert.strictEqual(obj.foo, 'bar')
 }

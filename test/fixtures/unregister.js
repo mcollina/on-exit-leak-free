@@ -8,6 +8,7 @@ function setup () {
   register(obj, shutdown)
   setImmediate(function () {
     unregister(obj)
+    unregister(obj) // twice, this should not throw
   })
 }
 

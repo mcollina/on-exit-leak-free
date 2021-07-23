@@ -9,7 +9,8 @@ const { register } = require('..')
 const files = [
   'close.js',
   'gc-not-close.js',
-  'unregister.js'
+  'unregister.js',
+  'beforeExit.js'
 ]
 
 for (const file of files) {
