@@ -3,8 +3,8 @@
 function genWrap (wraps, ref, fn, event) {
   function wrap () {
     const obj = ref.deref()
-    // This should alway happen, however GC is
-    // undeterministic so it might happen.
+    // This should always happen, however GC is
+    // undeterministic so it might not happen.
     /* istanbul ignore else */
     if (obj !== undefined) {
       fn(obj, event)
