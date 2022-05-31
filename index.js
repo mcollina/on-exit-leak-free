@@ -12,6 +12,12 @@ function genWrap (wraps, ref, fn, event) {
   }
 
   wraps[event] = wrap
+  // We are allowing infinite amount of listeners added
+  // by on-exit-leak-free
+  const maxListeners = process.getMaxListeners()
+  if (process.listenerCount(event) === maxListeners) {
+    process.setMaxListeners(maxListeners + 1)
+  }
   process.once(event, wrap)
 }
 
