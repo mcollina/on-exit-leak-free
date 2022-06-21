@@ -11,7 +11,6 @@ function setup () {
 let shutdownCalled = false
 let timeoutFinished = false
 function shutdown (obj, event) {
-  console.log(event)
   shutdownCalled = true
   if (event === 'beforeExit') {
     setTimeout(function () {
