@@ -10,18 +10,6 @@ function install () {
 
   process.on('exit', onExit)
   process.on('beforeExit', onBeforeExit)
-
-  process.on('newListener', function (event, listener) {
-    if (listener === onExit || listener === onBeforeExit) {
-      return
-    }
-
-    // Make sure this is always last
-    process.removeListener('exit', onExit)
-    process.removeListener('beforeExit', onBeforeExit)
-    process.on('exit', onExit)
-    process.on('beforeExit', onBeforeExit)
-  })
 }
 
 function uninstall () {
@@ -52,8 +40,6 @@ function callRefs (event) {
       fn(obj, event)
     }
   }
-
-  refs = []
 }
 
 function clear (ref) {

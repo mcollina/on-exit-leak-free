@@ -16,13 +16,6 @@ function shutdown (obj) {
 
 setup()
 
-// the shutdown function is called as the last of the beforeExit
-// event listener
-
-process.on('beforeExit', function () {
-  assert.strictEqual(shutdownCalled, false)
-})
-
 process.on('exit', function () {
   assert.strictEqual(shutdownCalled, true)
 })
