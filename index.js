@@ -9,7 +9,6 @@ function install () {
   }
 
   process.on('exit', onExit)
-  process.on('beforeExit', onBeforeExit)
 }
 
 function uninstall () {
@@ -17,15 +16,10 @@ function uninstall () {
     return
   }
   process.removeListener('exit', onExit)
-  process.removeListener('beforeExit', onBeforeExit)
 }
 
 function onExit () {
   callRefs('exit')
-}
-
-function onBeforeExit () {
-  callRefs('beforeExit')
 }
 
 function callRefs (event) {
