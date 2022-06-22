@@ -8,6 +8,7 @@ const { register } = require('..')
 
 const files = [
   'close.js',
+  'beforeExit',
   'gc-not-close.js',
   'unregister.js'
 ]
