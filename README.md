@@ -1,10 +1,11 @@
 # on-exit-leak-free
 
-Execute a function on exit without leaking memory, allowing all objects to be garbage collected.
-Listen to both `'beforeExit'` and `'exit'`, executing the given function only once.
+This module helps dispose of an object gracefully when the Node.js process exits.
+It executes a function with a given parameter
+on [`'exit'`](https://nodejs.org/api/process.html#event-exit) without leaking memory,
+cleaning things up appropriately if the object is garbage collected.
 
-
-Requires `WeakRef`, `WeakMap` and `FinalizationRegistry`, i.e. use Node v14+.
+Requires `WeakRef` and `FinalizationRegistry`, i.e. use Node v14+.
 
 ## Install
 

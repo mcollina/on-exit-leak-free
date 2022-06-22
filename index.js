@@ -1,8 +1,32 @@
 'use strict'
 
-function genWrap (wraps, ref, fn, event) {
-  function wrap () {
+let refs = []
+const registry = new FinalizationRegistry(clear)
+
+function install () {
+  if (refs.length > 0) {
+    return
+  }
+
+  process.on('exit', onExit)
+}
+
+function uninstall () {
+  if (refs.length > 0) {
+    return
+  }
+  process.removeListener('exit', onExit)
+}
+
+function onExit () {
+  callRefs('exit')
+}
+
+function callRefs (event) {
+  for (const ref of refs) {
     const obj = ref.deref()
+    const fn = ref.fn
+
     // This should always happen, however GC is
     // undeterministic so it might not happen.
     /* istanbul ignore else */
@@ -10,46 +34,33 @@ function genWrap (wraps, ref, fn, event) {
       fn(obj, event)
     }
   }
-
-  wraps[event] = wrap
-  // We are allowing infinite amount of listeners added
-  // by on-exit-leak-free
-  const maxListeners = process.getMaxListeners()
-  if (process.listenerCount(event) === maxListeners) {
-    process.setMaxListeners(maxListeners + 1)
-  }
-  process.once(event, wrap)
 }
 
-const registry = new FinalizationRegistry(clear)
-const map = new WeakMap()
-
-function clear (wraps) {
-  process.removeListener('exit', wraps.exit)
-  process.removeListener('beforeExit', wraps.beforeExit)
+function clear (ref) {
+  const index = refs.indexOf(ref)
+  refs.splice(index, index + 1)
+  uninstall()
 }
 
 function register (obj, fn) {
   if (obj === undefined) {
     throw new Error('the object can\'t be undefined')
   }
+  install()
   const ref = new WeakRef(obj)
+  ref.fn = fn
 
-  const wraps = {}
-  map.set(obj, wraps)
-  registry.register(obj, wraps)
-
-  genWrap(wraps, ref, fn, 'exit')
-  genWrap(wraps, ref, fn, 'beforeExit')
+  registry.register(obj, ref)
+  refs.push(ref)
 }
 
 function unregister (obj) {
-  const wraps = map.get(obj)
-  map.delete(obj)
-  if (wraps) {
-    clear(wraps)
-  }
   registry.unregister(obj)
+  refs = refs.filter((ref) => {
+    const _obj = ref.deref()
+    return _obj && _obj !== obj
+  })
+  uninstall()
 }
 
 module.exports = {
