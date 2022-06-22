@@ -27,6 +27,8 @@ function setup () {
   // There are no leaks.
   const obj = { foo: 'bar' }
   register(obj, shutdown)
+  // use registerBeforeExit(obj, shutdown) to execute the function only
+  // on beforeExit
   // call unregister(obj) to remove
 }
 
