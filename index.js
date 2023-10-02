@@ -45,6 +45,7 @@ function callRefs (event) {
       fn(obj, event)
     }
   }
+  refs[event] = []
 }
 
 function clear (ref) {
