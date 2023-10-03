@@ -8,7 +8,14 @@ const functions = {
   exit: onExit,
   beforeExit: onBeforeExit
 }
-const registry = new FinalizationRegistry(clear)
+
+let registry
+
+function ensureRegistry () {
+  if (registry === undefined) {
+    registry = new FinalizationRegistry(clear)
+  }
+}
 
 function install (event) {
   if (refs[event].length > 0) {
@@ -23,6 +30,9 @@ function uninstall (event) {
     return
   }
   process.removeListener(event, functions[event])
+  if (refs.exit.length === 0 && refs.beforeExit.length === 0) {
+    registry = undefined
+  }
 }
 
 function onExit () {
@@ -64,6 +74,7 @@ function _register (event, obj, fn) {
   const ref = new WeakRef(obj)
   ref.fn = fn
 
+  ensureRegistry()
   registry.register(obj, ref)
   refs[event].push(ref)
 }
@@ -77,6 +88,9 @@ function registerBeforeExit (obj, fn) {
 }
 
 function unregister (obj) {
+  if (registry === undefined) {
+    return
+  }
   registry.unregister(obj)
   for (const event of ['exit', 'beforeExit']) {
     refs[event] = refs[event].filter((ref) => {
